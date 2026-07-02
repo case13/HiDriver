@@ -1,0 +1,65 @@
+# Delphi build output
+__history/
+*.dcu
+*.rsm
+*.map
+*.local
+*.identcache
+*.stat
+*.tvsconfig
+*.dsk
+*.~*
+*.bak
+*.tmp
+
+# Delphi packages / binaries
+*.bpl
+*.dcp
+*.dres
+*.res
+*.exe
+*.dll
+*.so
+*.apk
+*.aab
+
+# Compiled folders
+Win32/
+Win64/
+Debug/
+Release/
+bin/
+obj/
+
+# IDE files
+*.projdata
+*.groupproj.local
+*.dproj.local
+
+# Logs
+*.log
+logs/
+
+# Database runtime files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env
+*.env
+config.ini
+appsettings.json
+
+# Keep examples
+!*.example.ini
+!*.example.json
+!*.example.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
