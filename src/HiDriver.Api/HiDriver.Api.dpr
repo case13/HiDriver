@@ -9,6 +9,7 @@ uses
   ApiConfigIntf in 'Config\Interfaces\ApiConfigIntf.pas',
   ApiConfig in 'Config\Implementations\ApiConfig.pas',
   AppBootstrapIntf in 'Config\Interfaces\AppBootstrapIntf.pas',
+  Horse,
   AppBootstrap in 'Config\Implementations\AppBootstrap.pas';
 
 var

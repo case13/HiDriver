@@ -63,3 +63,6 @@ desktop.ini
 
 # VS Code
 .vscode/
+
+# Boss dependencies
+modules/
