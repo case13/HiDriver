@@ -23,6 +23,8 @@ type
     procedure Update(AProduct: TProduct);
     procedure Deactivate(AId: Integer);
     function ExistsById(AId: Integer): Boolean;
+    procedure DecreaseStock(AProductId: Integer; AQuantity: Double);
+    procedure IncreaseStock(AProductId: Integer; AQuantity: Double);
   end;
 
 implementation
@@ -276,6 +278,50 @@ begin
     Query.ParamByName('id').AsInteger := AId;
     Query.Open;
     Result := not Query.IsEmpty;
+  finally
+    Query.Free;
+  end;
+end;
+
+procedure TProductRepository.DecreaseStock(
+  AProductId: Integer;
+  AQuantity: Double);
+var
+  Query: TFDQuery;
+begin
+  FDatabaseConnection.Connect;
+
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := FDatabaseConnection.Connection;
+    Query.SQL.Text :=
+      'UPDATE products SET current_stock = current_stock - :quantity, ' +
+      'updated_at = datetime(''now'') WHERE id = :id';
+    Query.ParamByName('quantity').AsFloat := AQuantity;
+    Query.ParamByName('id').AsInteger := AProductId;
+    Query.ExecSQL;
+  finally
+    Query.Free;
+  end;
+end;
+
+procedure TProductRepository.IncreaseStock(
+  AProductId: Integer;
+  AQuantity: Double);
+var
+  Query: TFDQuery;
+begin
+  FDatabaseConnection.Connect;
+
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := FDatabaseConnection.Connection;
+    Query.SQL.Text :=
+      'UPDATE products SET current_stock = current_stock + :quantity, ' +
+      'updated_at = datetime(''now'') WHERE id = :id';
+    Query.ParamByName('quantity').AsFloat := AQuantity;
+    Query.ParamByName('id').AsInteger := AProductId;
+    Query.ExecSQL;
   finally
     Query.Free;
   end;

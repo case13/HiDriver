@@ -62,7 +62,21 @@ uses
   CashMovementRepositoryIntf,
   CashMovementRepository,
   TransactionManagerIntf,
-  TransactionManager;
+  TransactionManager,
+  SaleControllerIntf,
+  SaleController,
+  SaleAppServiceIntf,
+  SaleAppService,
+  SaleValidatorIntf,
+  SaleValidator,
+  SaleDomainServiceIntf,
+  SaleDomainService,
+  SaleRepositoryIntf,
+  SaleRepository,
+  SaleItemRepositoryIntf,
+  SaleItemRepository,
+  SalePaymentRepositoryIntf,
+  SalePaymentRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -94,6 +108,13 @@ var
   CashRegisterAppService: ICashRegisterAppService;
   CashRegisterController: ICashRegisterController;
   TransactionManager: ITransactionManager;
+  SaleRepository: ISaleRepository;
+  SaleItemRepository: ISaleItemRepository;
+  SalePaymentRepository: ISalePaymentRepository;
+  SaleValidator: ISaleValidator;
+  SaleDomainService: ISaleDomainService;
+  SaleAppService: ISaleAppService;
+  SaleController: ISaleController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -152,6 +173,25 @@ begin
     TCashRegisterController.Create(CashRegisterAppService);
   CashRegisterController.RegisterRoutes;
 
+  SaleRepository := TSaleRepository.Create(DatabaseConnection);
+  SaleItemRepository := TSaleItemRepository.Create(DatabaseConnection);
+  SalePaymentRepository := TSalePaymentRepository.Create(DatabaseConnection);
+  SaleValidator := TSaleValidator.Create;
+  SaleDomainService := TSaleDomainService.Create;
+  SaleAppService := TSaleAppService.Create(
+    SaleRepository,
+    SaleItemRepository,
+    SalePaymentRepository,
+    ProductRepository,
+    CustomerRepository,
+    CashRegisterRepository,
+    CashMovementRepository,
+    SaleValidator,
+    SaleDomainService,
+    TransactionManager);
+  SaleController := TSaleController.Create(SaleAppService);
+  SaleController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
@@ -165,6 +205,8 @@ begin
         '/api/customers');
       Writeln('Cash endpoint: http://localhost:', FConfig.DefaultPort,
         '/api/cash/current');
+      Writeln('Sales endpoint: http://localhost:', FConfig.DefaultPort,
+        '/api/sales');
     end);
 end;
 

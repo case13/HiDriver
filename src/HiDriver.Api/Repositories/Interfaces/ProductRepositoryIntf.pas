@@ -21,6 +21,8 @@ type
     procedure Update(AProduct: TProduct);
     procedure Deactivate(AId: Integer);
     function ExistsById(AId: Integer): Boolean;
+    procedure DecreaseStock(AProductId: Integer; AQuantity: Double);
+    procedure IncreaseStock(AProductId: Integer; AQuantity: Double);
   end;
 
 implementation
