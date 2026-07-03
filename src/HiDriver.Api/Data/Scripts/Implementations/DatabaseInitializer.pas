@@ -83,6 +83,7 @@ begin
   FDatabaseConnection.Connect;
   ExecuteScript(GetScriptPath('001_create_schema_version.sql'));
   ExecuteScript(GetScriptPath('002_create_users.sql'));
+  ExecuteScript(GetScriptPath('003_create_products.sql'));
 end;
 
 end.

@@ -32,7 +32,15 @@ uses
   AuthValidatorIntf,
   AuthValidator,
   UserRepositoryIntf,
-  UserRepository;
+  UserRepository,
+  ProductControllerIntf,
+  ProductController,
+  ProductAppServiceIntf,
+  ProductAppService,
+  ProductValidatorIntf,
+  ProductValidator,
+  ProductRepositoryIntf,
+  ProductRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -49,6 +57,10 @@ var
   AuthValidator: IAuthValidator;
   AuthAppService: IAuthAppService;
   AuthController: IAuthController;
+  ProductRepository: IProductRepository;
+  ProductValidator: IProductValidator;
+  ProductAppService: IProductAppService;
+  ProductController: IProductController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -74,6 +86,14 @@ begin
   AuthController := TAuthController.Create(AuthAppService);
   AuthController.RegisterRoutes;
 
+  ProductRepository := TProductRepository.Create(DatabaseConnection);
+  ProductValidator := TProductValidator.Create;
+  ProductAppService := TProductAppService.Create(
+    ProductRepository,
+    ProductValidator);
+  ProductController := TProductController.Create(ProductAppService);
+  ProductController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
@@ -81,6 +101,8 @@ begin
       Writeln('Health check: http://localhost:', FConfig.DefaultPort, '/api/health');
       Writeln('Auth endpoint: http://localhost:', FConfig.DefaultPort,
         '/api/auth/login');
+      Writeln('Products endpoint: http://localhost:', FConfig.DefaultPort,
+        '/api/products');
     end);
 end;
 
