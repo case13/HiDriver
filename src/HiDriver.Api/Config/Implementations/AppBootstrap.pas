@@ -48,7 +48,21 @@ uses
   CustomerValidatorIntf,
   CustomerValidator,
   CustomerRepositoryIntf,
-  CustomerRepository;
+  CustomerRepository,
+  CashRegisterControllerIntf,
+  CashRegisterController,
+  CashRegisterAppServiceIntf,
+  CashRegisterAppService,
+  CashRegisterValidatorIntf,
+  CashRegisterValidator,
+  CashRegisterDomainServiceIntf,
+  CashRegisterDomainService,
+  CashRegisterRepositoryIntf,
+  CashRegisterRepository,
+  CashMovementRepositoryIntf,
+  CashMovementRepository,
+  TransactionManagerIntf,
+  TransactionManager;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -73,6 +87,13 @@ var
   CustomerValidator: ICustomerValidator;
   CustomerAppService: ICustomerAppService;
   CustomerController: ICustomerController;
+  CashRegisterRepository: ICashRegisterRepository;
+  CashMovementRepository: ICashMovementRepository;
+  CashRegisterValidator: ICashRegisterValidator;
+  CashRegisterDomainService: ICashRegisterDomainService;
+  CashRegisterAppService: ICashRegisterAppService;
+  CashRegisterController: ICashRegisterController;
+  TransactionManager: ITransactionManager;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -114,6 +135,23 @@ begin
   CustomerController := TCustomerController.Create(CustomerAppService);
   CustomerController.RegisterRoutes;
 
+  CashRegisterRepository :=
+    TCashRegisterRepository.Create(DatabaseConnection);
+  CashMovementRepository :=
+    TCashMovementRepository.Create(DatabaseConnection);
+  CashRegisterValidator := TCashRegisterValidator.Create;
+  CashRegisterDomainService := TCashRegisterDomainService.Create;
+  TransactionManager := TTransactionManager.Create(DatabaseConnection);
+  CashRegisterAppService := TCashRegisterAppService.Create(
+    CashRegisterRepository,
+    CashMovementRepository,
+    CashRegisterValidator,
+    CashRegisterDomainService,
+    TransactionManager);
+  CashRegisterController :=
+    TCashRegisterController.Create(CashRegisterAppService);
+  CashRegisterController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
@@ -125,6 +163,8 @@ begin
         '/api/products');
       Writeln('Customers endpoint: http://localhost:', FConfig.DefaultPort,
         '/api/customers');
+      Writeln('Cash endpoint: http://localhost:', FConfig.DefaultPort,
+        '/api/cash/current');
     end);
 end;
 

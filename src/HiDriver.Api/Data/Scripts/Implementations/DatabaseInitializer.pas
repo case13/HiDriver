@@ -87,6 +87,7 @@ begin
   ExecuteScript(GetScriptPath('002_create_users.sql'));
   ExecuteScript(GetScriptPath('003_create_products.sql'));
   ExecuteScript(GetScriptPath('004_create_customers.sql'));
+  ExecuteScript(GetScriptPath('005_create_cash_register.sql'));
 end;
 
 end.
