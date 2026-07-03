@@ -26,7 +26,8 @@ implementation
 uses
   System.SysUtils,
   FireDAC.Comp.Script,
-  FireDAC.Comp.ScriptCommands;
+  FireDAC.Comp.ScriptCommands,
+  FireDAC.Stan.Intf;
 
 constructor TDatabaseInitializer.Create(
   const ADatabaseConnection: IDatabaseConnection;
@@ -61,6 +62,7 @@ begin
   Script := TFDScript.Create(nil);
   try
     Script.Connection := FDatabaseConnection.Connection;
+    Script.ScriptOptions.FileEncoding := ecUTF8;
     Script.SQLScriptFileName := AScriptPath;
     Script.ValidateAll;
     Script.ExecuteAll;
@@ -84,6 +86,7 @@ begin
   ExecuteScript(GetScriptPath('001_create_schema_version.sql'));
   ExecuteScript(GetScriptPath('002_create_users.sql'));
   ExecuteScript(GetScriptPath('003_create_products.sql'));
+  ExecuteScript(GetScriptPath('004_create_customers.sql'));
 end;
 
 end.

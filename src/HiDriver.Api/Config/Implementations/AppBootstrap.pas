@@ -40,7 +40,15 @@ uses
   ProductValidatorIntf,
   ProductValidator,
   ProductRepositoryIntf,
-  ProductRepository;
+  ProductRepository,
+  CustomerControllerIntf,
+  CustomerController,
+  CustomerAppServiceIntf,
+  CustomerAppService,
+  CustomerValidatorIntf,
+  CustomerValidator,
+  CustomerRepositoryIntf,
+  CustomerRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -61,6 +69,10 @@ var
   ProductValidator: IProductValidator;
   ProductAppService: IProductAppService;
   ProductController: IProductController;
+  CustomerRepository: ICustomerRepository;
+  CustomerValidator: ICustomerValidator;
+  CustomerAppService: ICustomerAppService;
+  CustomerController: ICustomerController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -94,6 +106,14 @@ begin
   ProductController := TProductController.Create(ProductAppService);
   ProductController.RegisterRoutes;
 
+  CustomerRepository := TCustomerRepository.Create(DatabaseConnection);
+  CustomerValidator := TCustomerValidator.Create;
+  CustomerAppService := TCustomerAppService.Create(
+    CustomerRepository,
+    CustomerValidator);
+  CustomerController := TCustomerController.Create(CustomerAppService);
+  CustomerController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
@@ -103,6 +123,8 @@ begin
         '/api/auth/login');
       Writeln('Products endpoint: http://localhost:', FConfig.DefaultPort,
         '/api/products');
+      Writeln('Customers endpoint: http://localhost:', FConfig.DefaultPort,
+        '/api/customers');
     end);
 end;
 
