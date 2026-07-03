@@ -189,6 +189,8 @@
         <DCCReference Include="Controllers\Implementations\StockMovementController.pas"/>
         <DCCReference Include="Controllers\Interfaces\ReceiptControllerIntf.pas"/>
         <DCCReference Include="Controllers\Implementations\ReceiptController.pas"/>
+        <DCCReference Include="Controllers\Interfaces\IReportController.pas"/>
+        <DCCReference Include="Controllers\Implementations\ReportController.pas"/>
         <DCCReference Include="Services\Interfaces\AuthAppServiceIntf.pas"/>
         <DCCReference Include="Services\Implementations\AuthAppService.pas"/>
         <DCCReference Include="Services\Interfaces\ProductAppServiceIntf.pas"/>
@@ -207,6 +209,8 @@
         <DCCReference Include="Services\Implementations\JwtService.pas"/>
         <DCCReference Include="Services\Interfaces\ReceiptAppServiceIntf.pas"/>
         <DCCReference Include="Services\Implementations\ReceiptAppService.pas"/>
+        <DCCReference Include="Services\Interfaces\IReportAppService.pas"/>
+        <DCCReference Include="Services\Implementations\ReportAppService.pas"/>
         <DCCReference Include="Middlewares\Interfaces\AuthMiddlewareIntf.pas"/>
         <DCCReference Include="Middlewares\Implementations\AuthMiddleware.pas"/>
         <DCCReference Include="Validators\Interfaces\AuthValidatorIntf.pas"/>
@@ -225,6 +229,8 @@
         <DCCReference Include="Validators\Implementations\StockMovementValidator.pas"/>
         <DCCReference Include="Validators\Interfaces\ReceiptValidatorIntf.pas"/>
         <DCCReference Include="Validators\Implementations\ReceiptValidator.pas"/>
+        <DCCReference Include="Validators\Interfaces\IReportValidator.pas"/>
+        <DCCReference Include="Validators\Implementations\ReportValidator.pas"/>
         <DCCReference Include="Repositories\Interfaces\UserRepositoryIntf.pas"/>
         <DCCReference Include="Repositories\Implementations\UserRepository.pas"/>
         <DCCReference Include="Repositories\Interfaces\ProductRepositoryIntf.pas"/>
@@ -247,6 +253,8 @@
         <DCCReference Include="Repositories\Implementations\StockMovementRepository.pas"/>
         <DCCReference Include="Repositories\Interfaces\ReceiptRepositoryIntf.pas"/>
         <DCCReference Include="Repositories\Implementations\ReceiptRepository.pas"/>
+        <DCCReference Include="Repositories\Interfaces\IReportRepository.pas"/>
+        <DCCReference Include="Repositories\Implementations\ReportRepository.pas"/>
         <DCCReference Include="Domain\Entities\User.pas"/>
         <DCCReference Include="Domain\Entities\Product.pas"/>
         <DCCReference Include="Domain\Entities\Customer.pas"/>
@@ -270,6 +278,8 @@
         <DCCReference Include="Domain\Services\Implementations\StockMovementDomainService.pas"/>
         <DCCReference Include="Domain\Services\Interfaces\ReceiptDomainServiceIntf.pas"/>
         <DCCReference Include="Domain\Services\Implementations\ReceiptDomainService.pas"/>
+        <DCCReference Include="Domain\Services\Interfaces\IReportDomainService.pas"/>
+        <DCCReference Include="Domain\Services\Implementations\ReportDomainService.pas"/>
         <DCCReference Include="Utils\PasswordHasher.pas"/>
         <DCCReference Include="..\HiDriver.Shared\DTOs\Auth\AuthDtos.pas"/>
         <DCCReference Include="..\HiDriver.Shared\DTOs\Products\ProductDtos.pas"/>
@@ -288,6 +298,7 @@
         <DCCReference Include="..\HiDriver.Shared\DTOs\Receipts\ReceiptDto.pas"/>
         <DCCReference Include="..\HiDriver.Shared\Enums\ReceiptSourceTypeEnum.pas"/>
         <DCCReference Include="..\HiDriver.Shared\Enums\ReceiptStatusEnum.pas"/>
+        <DCCReference Include="..\HiDriver.Shared\DTOs\Reports\ReportDtos.pas"/>
         <DCCReference Include="Data\Connection\Interfaces\DatabaseConnectionIntf.pas"/>
         <DCCReference Include="Data\Connection\Implementations\DatabaseConnection.pas"/>
         <DCCReference Include="Data\Transactions\Interfaces\TransactionManagerIntf.pas"/>

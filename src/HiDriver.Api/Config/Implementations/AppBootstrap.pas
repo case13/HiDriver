@@ -110,7 +110,17 @@ uses
   ReceiptDomainServiceIntf,
   ReceiptDomainService,
   ReceiptRepositoryIntf,
-  ReceiptRepository;
+  ReceiptRepository,
+  IReportController,
+  ReportController,
+  IReportAppService,
+  ReportAppService,
+  IReportValidator,
+  ReportValidator,
+  IReportDomainService,
+  ReportDomainService,
+  IReportRepository,
+  ReportRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -166,6 +176,11 @@ var
   ReceiptDomainService: IReceiptDomainService;
   ReceiptAppService: IReceiptAppService;
   ReceiptController: IReceiptController;
+  ReportRepository: IReportRepositoryContract;
+  ReportValidator: IReportValidatorContract;
+  ReportDomainService: IReportDomainServiceContract;
+  ReportAppService: IReportAppServiceContract;
+  ReportController: IReportControllerContract;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -305,6 +320,16 @@ begin
   SaleController := TSaleController.Create(SaleAppService);
   SaleController.RegisterRoutes;
 
+  ReportRepository := TReportRepository.Create(DatabaseConnection);
+  ReportValidator := TReportValidator.Create;
+  ReportDomainService := TReportDomainService.Create;
+  ReportAppService := TReportAppService.Create(
+    ReportRepository,
+    ReportValidator,
+    ReportDomainService);
+  ReportController := TReportController.Create(ReportAppService);
+  ReportController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
@@ -326,6 +351,8 @@ begin
         FConfig.DefaultPort, '/api/stock-movements');
       Writeln('Receipts endpoint: http://localhost:',
         FConfig.DefaultPort, '/api/receipts');
+      Writeln('Reports endpoint: http://localhost:',
+        FConfig.DefaultPort, '/api/reports/sales-summary');
     end);
 end;
 
