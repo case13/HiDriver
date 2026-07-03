@@ -19,6 +19,10 @@ implementation
 
 uses
   Horse,
+  DatabaseConnectionIntf,
+  DatabaseConnection,
+  DatabaseInitializerIntf,
+  DatabaseInitializer,
   HealthControllerIntf,
   HealthController;
 
@@ -30,6 +34,8 @@ end;
 
 procedure TAppBootstrap.Execute;
 var
+  DatabaseConnection: IDatabaseConnection;
+  DatabaseInitializer: IDatabaseInitializer;
   HealthController: IHealthController;
 begin
   HealthController := THealthController.Create(FConfig);
@@ -40,6 +46,15 @@ begin
   Writeln('Environment: ' + FConfig.Environment);
   Writeln('Default Port: ', FConfig.DefaultPort);
   Writeln('Status: Starting...');
+
+  DatabaseConnection := TDatabaseConnection.Create(FConfig);
+  DatabaseInitializer := TDatabaseInitializer.Create(
+    DatabaseConnection,
+    FConfig);
+  DatabaseInitializer.Initialize;
+
+  Writeln('Database: SQLite');
+  Writeln('Database Status: Ready');
 
   THorse.Listen(FConfig.DefaultPort,
     procedure

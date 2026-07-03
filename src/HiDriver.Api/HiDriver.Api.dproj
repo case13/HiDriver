@@ -173,6 +173,12 @@
         <DCCReference Include="Config\Implementations\AppBootstrap.pas"/>
         <DCCReference Include="Controllers\Interfaces\HealthControllerIntf.pas"/>
         <DCCReference Include="Controllers\Implementations\HealthController.pas"/>
+        <DCCReference Include="Data\Connection\Interfaces\DatabaseConnectionIntf.pas"/>
+        <DCCReference Include="Data\Connection\Implementations\DatabaseConnection.pas"/>
+        <DCCReference Include="Data\Transactions\Interfaces\TransactionManagerIntf.pas"/>
+        <DCCReference Include="Data\Transactions\Implementations\TransactionManager.pas"/>
+        <DCCReference Include="Data\Scripts\Interfaces\DatabaseInitializerIntf.pas"/>
+        <DCCReference Include="Data\Scripts\Implementations\DatabaseInitializer.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
