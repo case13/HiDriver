@@ -23,6 +23,7 @@ type
     function Insert(AAccountReceivable: TAccountReceivable): Integer;
     procedure Update(AAccountReceivable: TAccountReceivable);
     procedure InsertPayment(APayment: TAccountReceivablePayment);
+    function GetPaymentById(AId: Integer): TAccountReceivablePayment;
     function GetPaymentsByAccountReceivableId(
       AAccountReceivableId: Integer):
       TObjectList<TAccountReceivablePayment>;
@@ -328,6 +329,33 @@ begin
     Query.ExecSQL;
     APayment.Id := Query.Connection.GetLastAutoGenValue(
       'account_receivable_payments');
+  finally
+    Query.Free;
+  end;
+end;
+
+function TAccountReceivableRepository.GetPaymentById(
+  AId: Integer): TAccountReceivablePayment;
+var
+  Query: TFDQuery;
+begin
+  Result := nil;
+  FDatabaseConnection.Connect;
+
+  Query := TFDQuery.Create(nil);
+  try
+    Query.Connection := FDatabaseConnection.Connection;
+    Query.SQL.Text :=
+      'SELECT id, account_receivable_id, cash_register_id, ' +
+      'cash_movement_id, payment_date, payment_method, amount, ' +
+      'discount_amount, interest_amount, total_received, notes, ' +
+      'created_at FROM account_receivable_payments ' +
+      'WHERE id = :id LIMIT 1';
+    Query.ParamByName('id').AsInteger := AId;
+    Query.Open;
+
+    if not Query.IsEmpty then
+      Result := QueryToAccountReceivablePayment(Query);
   finally
     Query.Free;
   end;

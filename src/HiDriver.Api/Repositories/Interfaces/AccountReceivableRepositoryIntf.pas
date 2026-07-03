@@ -21,6 +21,8 @@ type
     procedure Update(AAccountReceivable: TAccountReceivable);
     // InsertPayment does not take ownership of APayment.
     procedure InsertPayment(APayment: TAccountReceivablePayment);
+    // The caller owns the returned payment.
+    function GetPaymentById(AId: Integer): TAccountReceivablePayment;
     // The caller owns the returned list and its payments.
     function GetPaymentsByAccountReceivableId(
       AAccountReceivableId: Integer):

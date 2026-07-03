@@ -100,7 +100,17 @@ uses
   StockMovementDomainServiceIntf,
   StockMovementDomainService,
   StockMovementRepositoryIntf,
-  StockMovementRepository;
+  StockMovementRepository,
+  ReceiptControllerIntf,
+  ReceiptController,
+  ReceiptAppServiceIntf,
+  ReceiptAppService,
+  ReceiptValidatorIntf,
+  ReceiptValidator,
+  ReceiptDomainServiceIntf,
+  ReceiptDomainService,
+  ReceiptRepositoryIntf,
+  ReceiptRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -151,6 +161,11 @@ var
   StockMovementDomainService: IStockMovementDomainService;
   StockMovementAppService: IStockMovementAppService;
   StockMovementController: IStockMovementController;
+  ReceiptRepository: IReceiptRepository;
+  ReceiptValidator: IReceiptValidator;
+  ReceiptDomainService: IReceiptDomainService;
+  ReceiptAppService: IReceiptAppService;
+  ReceiptController: IReceiptController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -254,6 +269,23 @@ begin
   SaleRepository := TSaleRepository.Create(DatabaseConnection);
   SaleItemRepository := TSaleItemRepository.Create(DatabaseConnection);
   SalePaymentRepository := TSalePaymentRepository.Create(DatabaseConnection);
+
+  ReceiptRepository := TReceiptRepository.Create(DatabaseConnection);
+  ReceiptValidator := TReceiptValidator.Create;
+  ReceiptDomainService := TReceiptDomainService.Create;
+  ReceiptAppService := TReceiptAppService.Create(
+    ReceiptRepository,
+    ReceiptValidator,
+    ReceiptDomainService,
+    SaleRepository,
+    SaleItemRepository,
+    SalePaymentRepository,
+    AccountReceivableRepository,
+    CustomerRepository,
+    TransactionManager);
+  ReceiptController := TReceiptController.Create(ReceiptAppService);
+  ReceiptController.RegisterRoutes;
+
   SaleValidator := TSaleValidator.Create;
   SaleDomainService := TSaleDomainService.Create;
   SaleAppService := TSaleAppService.Create(
@@ -268,7 +300,8 @@ begin
     SaleDomainService,
     TransactionManager,
     AccountReceivableAppService,
-    StockMovementAppService);
+    StockMovementAppService,
+    ReceiptRepository);
   SaleController := TSaleController.Create(SaleAppService);
   SaleController.RegisterRoutes;
 
@@ -291,6 +324,8 @@ begin
         FConfig.DefaultPort, '/api/accounts-receivable');
       Writeln('Stock movements endpoint: http://localhost:',
         FConfig.DefaultPort, '/api/stock-movements');
+      Writeln('Receipts endpoint: http://localhost:',
+        FConfig.DefaultPort, '/api/receipts');
     end);
 end;
 

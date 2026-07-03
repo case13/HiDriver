@@ -8,6 +8,7 @@ uses
   CashRegisterRepositoryIntf,
   CustomerRepositoryIntf,
   ProductRepositoryIntf,
+  ReceiptRepositoryIntf,
   SaleAppServiceIntf,
   SaleDomainServiceIntf,
   SaleDtos,
@@ -33,6 +34,7 @@ type
     FTransactionManager: ITransactionManager;
     FAccountReceivableAppService: IAccountReceivableAppService;
     FStockMovementAppService: IStockMovementAppService;
+    FReceiptRepository: IReceiptRepository;
   protected
     function ISaleAppService.Create = CreateSale;
     function CreateSale(ASale: TSaleCreateDto): string;
@@ -50,7 +52,8 @@ type
       const ATransactionManager: ITransactionManager;
       const AAccountReceivableAppService:
         IAccountReceivableAppService;
-      const AStockMovementAppService: IStockMovementAppService);
+      const AStockMovementAppService: IStockMovementAppService;
+      const AReceiptRepository: IReceiptRepository);
     function GetAll: string;
     function GetById(AId: Integer): string;
     function Cancel(AId: Integer): string;
@@ -69,6 +72,8 @@ uses
   Customer,
   PaymentMethodEnum,
   Product,
+  Receipt,
+  ReceiptSourceTypeEnum,
   Sale,
   SaleItem,
   SalePayment;
@@ -238,7 +243,8 @@ constructor TSaleAppService.Create(
   const ATransactionManager: ITransactionManager;
   const AAccountReceivableAppService:
     IAccountReceivableAppService;
-  const AStockMovementAppService: IStockMovementAppService);
+  const AStockMovementAppService: IStockMovementAppService;
+  const AReceiptRepository: IReceiptRepository);
 begin
   inherited Create;
   FSaleRepository := ASaleRepository;
@@ -254,6 +260,7 @@ begin
   FAccountReceivableAppService :=
     AAccountReceivableAppService;
   FStockMovementAppService := AStockMovementAppService;
+  FReceiptRepository := AReceiptRepository;
 end;
 
 function TSaleAppService.CreateSale(ASale: TSaleCreateDto): string;
@@ -504,6 +511,7 @@ end;
 
 function TSaleAppService.Cancel(AId: Integer): string;
 var
+  ActiveReceipt: TReceipt;
   CashMovement: TCashMovement;
   CashRegister: TCashRegister;
   Items: TObjectList<TSaleItem>;
@@ -512,6 +520,7 @@ var
   Payment: TSalePayment;
   Sale: TSale;
 begin
+  ActiveReceipt := nil;
   CashRegister := nil;
   Items := nil;
   Payments := nil;
@@ -525,6 +534,14 @@ begin
 
       if Sale.IsCanceled or FSaleRepository.IsCanceled(AId) then
         raise ESaleStateException.Create('Sale is already canceled.');
+
+      ActiveReceipt := FReceiptRepository.GetBySource(
+        ReceiptSourceTypeToString(rstSale),
+        Sale.Id);
+      if Assigned(ActiveReceipt) then
+        raise ESaleStateException.CreateFmt(
+          'Sale has active receipt %s. Cancel the receipt first.',
+          [ActiveReceipt.ReceiptNumber]);
 
       CashRegister := FCashRegisterRepository.FindOpen;
       if not Assigned(CashRegister) then
@@ -593,6 +610,7 @@ begin
       'Sale canceled successfully.',
       SaleToJson(Sale, Items, Payments));
   finally
+    ActiveReceipt.Free;
     Payments.Free;
     Items.Free;
     CashRegister.Free;
