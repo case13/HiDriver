@@ -24,7 +24,15 @@ uses
   DatabaseInitializerIntf,
   DatabaseInitializer,
   HealthControllerIntf,
-  HealthController;
+  HealthController,
+  AuthControllerIntf,
+  AuthController,
+  AuthAppServiceIntf,
+  AuthAppService,
+  AuthValidatorIntf,
+  AuthValidator,
+  UserRepositoryIntf,
+  UserRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -37,10 +45,11 @@ var
   DatabaseConnection: IDatabaseConnection;
   DatabaseInitializer: IDatabaseInitializer;
   HealthController: IHealthController;
+  UserRepository: IUserRepository;
+  AuthValidator: IAuthValidator;
+  AuthAppService: IAuthAppService;
+  AuthController: IAuthController;
 begin
-  HealthController := THealthController.Create(FConfig);
-  HealthController.RegisterRoutes;
-
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
   Writeln('Environment: ' + FConfig.Environment);
@@ -56,11 +65,22 @@ begin
   Writeln('Database: SQLite');
   Writeln('Database Status: Ready');
 
+  HealthController := THealthController.Create(FConfig);
+  HealthController.RegisterRoutes;
+
+  UserRepository := TUserRepository.Create(DatabaseConnection);
+  AuthValidator := TAuthValidator.Create;
+  AuthAppService := TAuthAppService.Create(UserRepository, AuthValidator);
+  AuthController := TAuthController.Create(AuthAppService);
+  AuthController.RegisterRoutes;
+
   THorse.Listen(FConfig.DefaultPort,
     procedure
     begin
       Writeln('Server running at: http://localhost:', FConfig.DefaultPort);
       Writeln('Health check: http://localhost:', FConfig.DefaultPort, '/api/health');
+      Writeln('Auth endpoint: http://localhost:', FConfig.DefaultPort,
+        '/api/auth/login');
     end);
 end;
 

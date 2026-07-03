@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{058BAB32-BF77-4162-8933-3B2500723ED3}</ProjectGuid>
         <ProjectVersion>19.1</ProjectVersion>
@@ -173,6 +173,17 @@
         <DCCReference Include="Config\Implementations\AppBootstrap.pas"/>
         <DCCReference Include="Controllers\Interfaces\HealthControllerIntf.pas"/>
         <DCCReference Include="Controllers\Implementations\HealthController.pas"/>
+        <DCCReference Include="Controllers\Interfaces\AuthControllerIntf.pas"/>
+        <DCCReference Include="Controllers\Implementations\AuthController.pas"/>
+        <DCCReference Include="Services\Interfaces\AuthAppServiceIntf.pas"/>
+        <DCCReference Include="Services\Implementations\AuthAppService.pas"/>
+        <DCCReference Include="Validators\Interfaces\AuthValidatorIntf.pas"/>
+        <DCCReference Include="Validators\Implementations\AuthValidator.pas"/>
+        <DCCReference Include="Repositories\Interfaces\UserRepositoryIntf.pas"/>
+        <DCCReference Include="Repositories\Implementations\UserRepository.pas"/>
+        <DCCReference Include="Domain\Entities\User.pas"/>
+        <DCCReference Include="Utils\PasswordHasher.pas"/>
+        <DCCReference Include="..\HiDriver.Shared\DTOs\Auth\AuthDtos.pas"/>
         <DCCReference Include="Data\Connection\Interfaces\DatabaseConnectionIntf.pas"/>
         <DCCReference Include="Data\Connection\Implementations\DatabaseConnection.pas"/>
         <DCCReference Include="Data\Transactions\Interfaces\TransactionManagerIntf.pas"/>

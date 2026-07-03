@@ -12,7 +12,8 @@ type
   private
     FDatabaseConnection: IDatabaseConnection;
     FConfig: IApiConfig;
-    function GetInitialScriptPath: string;
+    function GetScriptPath(const AFileName: string): string;
+    procedure ExecuteScript(const AScriptPath: string);
   public
     constructor Create(
       const ADatabaseConnection: IDatabaseConnection;
@@ -36,7 +37,8 @@ begin
   FConfig := AConfig;
 end;
 
-function TDatabaseInitializer.GetInitialScriptPath: string;
+function TDatabaseInitializer.GetScriptPath(
+  const AFileName: string): string;
 var
   DatabaseDirectory: string;
   DatabaseRoot: string;
@@ -44,14 +46,32 @@ begin
   DatabaseDirectory := ExtractFileDir(FConfig.DatabasePath);
   DatabaseRoot := ExtractFileDir(DatabaseDirectory);
   Result := IncludeTrailingPathDelimiter(DatabaseRoot) +
-    'scripts\001_create_schema_version.sql';
+    'scripts\' + AFileName;
+end;
+
+procedure TDatabaseInitializer.ExecuteScript(const AScriptPath: string);
+var
+  Script: TFDScript;
+begin
+  if not FileExists(AScriptPath) then
+    raise Exception.CreateFmt(
+      'Database initialization script not found: %s',
+      [AScriptPath]);
+
+  Script := TFDScript.Create(nil);
+  try
+    Script.Connection := FDatabaseConnection.Connection;
+    Script.SQLScriptFileName := AScriptPath;
+    Script.ValidateAll;
+    Script.ExecuteAll;
+  finally
+    Script.Free;
+  end;
 end;
 
 procedure TDatabaseInitializer.Initialize;
 var
   DatabaseDirectory: string;
-  Script: TFDScript;
-  ScriptPath: string;
 begin
   DatabaseDirectory := ExtractFileDir(FConfig.DatabasePath);
   if not DirectoryExists(DatabaseDirectory) and
@@ -60,23 +80,9 @@ begin
       'Unable to create database directory: %s',
       [DatabaseDirectory]);
 
-  ScriptPath := GetInitialScriptPath;
-  if not FileExists(ScriptPath) then
-    raise Exception.CreateFmt(
-      'Database initialization script not found: %s',
-      [ScriptPath]);
-
   FDatabaseConnection.Connect;
-
-  Script := TFDScript.Create(nil);
-  try
-    Script.Connection := FDatabaseConnection.Connection;
-    Script.SQLScriptFileName := ScriptPath;
-    Script.ValidateAll;
-    Script.ExecuteAll;
-  finally
-    Script.Free;
-  end;
+  ExecuteScript(GetScriptPath('001_create_schema_version.sql'));
+  ExecuteScript(GetScriptPath('002_create_users.sql'));
 end;
 
 end.
