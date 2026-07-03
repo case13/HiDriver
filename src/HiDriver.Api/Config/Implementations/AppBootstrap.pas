@@ -29,6 +29,10 @@ uses
   AuthController,
   AuthAppServiceIntf,
   AuthAppService,
+  JwtServiceIntf,
+  JwtService,
+  AuthMiddlewareIntf,
+  AuthMiddleware,
   AuthValidatorIntf,
   AuthValidator,
   UserRepositoryIntf,
@@ -113,6 +117,8 @@ var
   AuthValidator: IAuthValidator;
   AuthAppService: IAuthAppService;
   AuthController: IAuthController;
+  JwtService: IJwtService;
+  AuthMiddleware: IAuthMiddleware;
   ProductRepository: IProductRepository;
   ProductValidator: IProductValidator;
   ProductAppService: IProductAppService;
@@ -161,12 +167,19 @@ begin
   Writeln('Database: SQLite');
   Writeln('Database Status: Ready');
 
+  JwtService := TJwtService.Create(FConfig);
+  AuthMiddleware := TAuthMiddleware.Create(JwtService);
+  AuthMiddleware.Register;
+
   HealthController := THealthController.Create(FConfig);
   HealthController.RegisterRoutes;
 
   UserRepository := TUserRepository.Create(DatabaseConnection);
   AuthValidator := TAuthValidator.Create;
-  AuthAppService := TAuthAppService.Create(UserRepository, AuthValidator);
+  AuthAppService := TAuthAppService.Create(
+    UserRepository,
+    AuthValidator,
+    JwtService);
   AuthController := TAuthController.Create(AuthAppService);
   AuthController.RegisterRoutes;
 

@@ -201,6 +201,10 @@
         <DCCReference Include="Services\Implementations\AccountReceivableAppService.pas"/>
         <DCCReference Include="Services\Interfaces\StockMovementAppServiceIntf.pas"/>
         <DCCReference Include="Services\Implementations\StockMovementAppService.pas"/>
+        <DCCReference Include="Services\Interfaces\JwtServiceIntf.pas"/>
+        <DCCReference Include="Services\Implementations\JwtService.pas"/>
+        <DCCReference Include="Middlewares\Interfaces\AuthMiddlewareIntf.pas"/>
+        <DCCReference Include="Middlewares\Implementations\AuthMiddleware.pas"/>
         <DCCReference Include="Validators\Interfaces\AuthValidatorIntf.pas"/>
         <DCCReference Include="Validators\Implementations\AuthValidator.pas"/>
         <DCCReference Include="Validators\Interfaces\ProductValidatorIntf.pas"/>

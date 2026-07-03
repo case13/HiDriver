@@ -6,6 +6,7 @@ uses
   AuthDtos,
   AuthAppServiceIntf,
   AuthValidatorIntf,
+  JwtServiceIntf,
   UserRepositoryIntf;
 
 type
@@ -13,10 +14,12 @@ type
   private
     FUserRepository: IUserRepository;
     FAuthValidator: IAuthValidator;
+    FJwtService: IJwtService;
   public
     constructor Create(
       const AUserRepository: IUserRepository;
-      const AAuthValidator: IAuthValidator);
+      const AAuthValidator: IAuthValidator;
+      const AJwtService: IJwtService);
     function Login(
       const AUserName,
       APassword: string): TLoginResponseDto;
@@ -31,11 +34,13 @@ uses
 
 constructor TAuthAppService.Create(
   const AUserRepository: IUserRepository;
-  const AAuthValidator: IAuthValidator);
+  const AAuthValidator: IAuthValidator;
+  const AJwtService: IJwtService);
 begin
   inherited Create;
   FUserRepository := AUserRepository;
   FAuthValidator := AAuthValidator;
+  FJwtService := AJwtService;
 end;
 
 function TAuthAppService.Login(
@@ -63,7 +68,11 @@ begin
         'Invalid username or password.');
 
     Result := TLoginResponseDto.Create;
-    Result.Token := TGUID.NewGuid.ToString;
+    Result.Token := FJwtService.GenerateToken(
+      User.Id,
+      User.UserName,
+      User.DisplayName,
+      User.Role);
     Result.UserId := User.Id;
     Result.UserName := User.UserName;
     Result.DisplayName := User.DisplayName;
