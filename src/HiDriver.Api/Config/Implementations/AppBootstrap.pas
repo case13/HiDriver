@@ -86,7 +86,17 @@ uses
   AccountReceivableDomainServiceIntf,
   AccountReceivableDomainService,
   AccountReceivableRepositoryIntf,
-  AccountReceivableRepository;
+  AccountReceivableRepository,
+  StockMovementControllerIntf,
+  StockMovementController,
+  StockMovementAppServiceIntf,
+  StockMovementAppService,
+  StockMovementValidatorIntf,
+  StockMovementValidator,
+  StockMovementDomainServiceIntf,
+  StockMovementDomainService,
+  StockMovementRepositoryIntf,
+  StockMovementRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -130,6 +140,11 @@ var
   AccountReceivableDomainService: IAccountReceivableDomainService;
   AccountReceivableAppService: IAccountReceivableAppService;
   AccountReceivableController: IAccountReceivableController;
+  StockMovementRepository: IStockMovementRepository;
+  StockMovementValidator: IStockMovementValidator;
+  StockMovementDomainService: IStockMovementDomainService;
+  StockMovementAppService: IStockMovementAppService;
+  StockMovementController: IStockMovementController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -208,6 +223,21 @@ begin
       AccountReceivableAppService);
   AccountReceivableController.RegisterRoutes;
 
+  StockMovementRepository :=
+    TStockMovementRepository.Create(DatabaseConnection);
+  StockMovementValidator := TStockMovementValidator.Create;
+  StockMovementDomainService :=
+    TStockMovementDomainService.Create;
+  StockMovementAppService := TStockMovementAppService.Create(
+    StockMovementRepository,
+    StockMovementValidator,
+    StockMovementDomainService,
+    ProductRepository,
+    TransactionManager);
+  StockMovementController :=
+    TStockMovementController.Create(StockMovementAppService);
+  StockMovementController.RegisterRoutes;
+
   SaleRepository := TSaleRepository.Create(DatabaseConnection);
   SaleItemRepository := TSaleItemRepository.Create(DatabaseConnection);
   SalePaymentRepository := TSalePaymentRepository.Create(DatabaseConnection);
@@ -224,7 +254,8 @@ begin
     SaleValidator,
     SaleDomainService,
     TransactionManager,
-    AccountReceivableAppService);
+    AccountReceivableAppService,
+    StockMovementAppService);
   SaleController := TSaleController.Create(SaleAppService);
   SaleController.RegisterRoutes;
 
@@ -245,6 +276,8 @@ begin
         '/api/sales');
       Writeln('Accounts receivable endpoint: http://localhost:',
         FConfig.DefaultPort, '/api/accounts-receivable');
+      Writeln('Stock movements endpoint: http://localhost:',
+        FConfig.DefaultPort, '/api/stock-movements');
     end);
 end;
 

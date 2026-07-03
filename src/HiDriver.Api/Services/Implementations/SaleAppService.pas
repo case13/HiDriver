@@ -15,6 +15,7 @@ uses
   SalePaymentRepositoryIntf,
   SaleRepositoryIntf,
   SaleValidatorIntf,
+  StockMovementAppServiceIntf,
   TransactionManagerIntf;
 
 type
@@ -31,6 +32,7 @@ type
     FSaleDomainService: ISaleDomainService;
     FTransactionManager: ITransactionManager;
     FAccountReceivableAppService: IAccountReceivableAppService;
+    FStockMovementAppService: IStockMovementAppService;
   protected
     function ISaleAppService.Create = CreateSale;
     function CreateSale(ASale: TSaleCreateDto): string;
@@ -47,7 +49,8 @@ type
       const ASaleDomainService: ISaleDomainService;
       const ATransactionManager: ITransactionManager;
       const AAccountReceivableAppService:
-        IAccountReceivableAppService);
+        IAccountReceivableAppService;
+      const AStockMovementAppService: IStockMovementAppService);
     function GetAll: string;
     function GetById(AId: Integer): string;
     function Cancel(AId: Integer): string;
@@ -234,7 +237,8 @@ constructor TSaleAppService.Create(
   const ASaleDomainService: ISaleDomainService;
   const ATransactionManager: ITransactionManager;
   const AAccountReceivableAppService:
-    IAccountReceivableAppService);
+    IAccountReceivableAppService;
+  const AStockMovementAppService: IStockMovementAppService);
 begin
   inherited Create;
   FSaleRepository := ASaleRepository;
@@ -249,6 +253,7 @@ begin
   FTransactionManager := ATransactionManager;
   FAccountReceivableAppService :=
     AAccountReceivableAppService;
+  FStockMovementAppService := AStockMovementAppService;
 end;
 
 function TSaleAppService.CreateSale(ASale: TSaleCreateDto): string;
@@ -372,7 +377,18 @@ begin
       begin
         Item.SaleId := Sale.Id;
         FSaleItemRepository.Insert(Item);
-        FProductRepository.DecreaseStock(Item.ProductId, Item.Quantity);
+        try
+          FStockMovementAppService.RegisterSaleOut(
+            Item.ProductId,
+            Item.Quantity,
+            Sale.Id,
+            CashRegister.UserId);
+        except
+          on E: EStockMovementValidationException do
+            raise ESaleValidationException.Create(E.Message);
+          on E: EStockMovementStateException do
+            raise ESaleStateException.Create(E.Message);
+        end;
       end;
 
       for PaymentDto in ASale.Payments do
@@ -534,7 +550,18 @@ begin
       FAccountReceivableAppService.CancelBySaleId(Sale.Id);
 
       for Item in Items do
-        FProductRepository.IncreaseStock(Item.ProductId, Item.Quantity);
+        try
+          FStockMovementAppService.RegisterSaleCancellationReversal(
+            Item.ProductId,
+            Item.Quantity,
+            Sale.Id,
+            0);
+        except
+          on E: EStockMovementValidationException do
+            raise ESaleValidationException.Create(E.Message);
+          on E: EStockMovementStateException do
+            raise ESaleStateException.Create(E.Message);
+        end;
 
       for Payment in Payments do
         if Payment.AffectsCashRegister then
