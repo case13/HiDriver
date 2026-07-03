@@ -3,6 +3,7 @@ unit SaleAppService;
 interface
 
 uses
+  AccountReceivableAppServiceIntf,
   CashMovementRepositoryIntf,
   CashRegisterRepositoryIntf,
   CustomerRepositoryIntf,
@@ -29,6 +30,7 @@ type
     FSaleValidator: ISaleValidator;
     FSaleDomainService: ISaleDomainService;
     FTransactionManager: ITransactionManager;
+    FAccountReceivableAppService: IAccountReceivableAppService;
   protected
     function ISaleAppService.Create = CreateSale;
     function CreateSale(ASale: TSaleCreateDto): string;
@@ -43,7 +45,9 @@ type
       const ACashMovementRepository: ICashMovementRepository;
       const ASaleValidator: ISaleValidator;
       const ASaleDomainService: ISaleDomainService;
-      const ATransactionManager: ITransactionManager);
+      const ATransactionManager: ITransactionManager;
+      const AAccountReceivableAppService:
+        IAccountReceivableAppService);
     function GetAll: string;
     function GetById(AId: Integer): string;
     function Cancel(AId: Integer): string;
@@ -228,7 +232,9 @@ constructor TSaleAppService.Create(
   const ACashMovementRepository: ICashMovementRepository;
   const ASaleValidator: ISaleValidator;
   const ASaleDomainService: ISaleDomainService;
-  const ATransactionManager: ITransactionManager);
+  const ATransactionManager: ITransactionManager;
+  const AAccountReceivableAppService:
+    IAccountReceivableAppService);
 begin
   inherited Create;
   FSaleRepository := ASaleRepository;
@@ -241,12 +247,15 @@ begin
   FSaleValidator := ASaleValidator;
   FSaleDomainService := ASaleDomainService;
   FTransactionManager := ATransactionManager;
+  FAccountReceivableAppService :=
+    AAccountReceivableAppService;
 end;
 
 function TSaleAppService.CreateSale(ASale: TSaleCreateDto): string;
 var
   CashMovement: TCashMovement;
   CashRegister: TCashRegister;
+  CreditSaleTotal: Currency;
   Customer: TCustomer;
   ErrorMessage: string;
   ExistingQuantity: Double;
@@ -276,6 +285,7 @@ begin
   Payments := TObjectList<TSalePayment>.Create(True);
   RequestedQuantities := TDictionary<Integer, Double>.Create;
   Sale := TSale.Create;
+  CreditSaleTotal := 0;
   try
     FTransactionManager.StartTransaction;
     try
@@ -379,7 +389,9 @@ begin
         Payments.Add(Payment);
         FSalePaymentRepository.Insert(Payment);
 
-        if Payment.AffectsCashRegister then
+        if PaymentMethod = pmCreditSale then
+          CreditSaleTotal := CreditSaleTotal + Payment.Amount
+        else if Payment.AffectsCashRegister then
         begin
           CashMovement := TCashMovement.Create;
           try
@@ -398,6 +410,11 @@ begin
           end;
         end;
       end;
+
+      FAccountReceivableAppService.CreateFromCreditSale(
+        Sale.Id,
+        Sale.CustomerId,
+        CreditSaleTotal);
 
       FTransactionManager.Commit;
     except
@@ -504,8 +521,17 @@ begin
       Items := FSaleItemRepository.FindBySaleId(Sale.Id);
       Payments := FSalePaymentRepository.FindBySaleId(Sale.Id);
 
+      try
+        FAccountReceivableAppService.ValidateSaleCancellation(
+          Sale.Id);
+      except
+        on E: EAccountReceivableStateException do
+          raise ESaleStateException.Create(E.Message);
+      end;
+
       Sale.Cancel;
       FSaleRepository.Cancel(Sale.Id);
+      FAccountReceivableAppService.CancelBySaleId(Sale.Id);
 
       for Item in Items do
         FProductRepository.IncreaseStock(Item.ProductId, Item.Quantity);

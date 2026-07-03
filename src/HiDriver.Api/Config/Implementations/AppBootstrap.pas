@@ -76,7 +76,17 @@ uses
   SaleItemRepositoryIntf,
   SaleItemRepository,
   SalePaymentRepositoryIntf,
-  SalePaymentRepository;
+  SalePaymentRepository,
+  AccountReceivableControllerIntf,
+  AccountReceivableController,
+  AccountReceivableAppServiceIntf,
+  AccountReceivableAppService,
+  AccountReceivableValidatorIntf,
+  AccountReceivableValidator,
+  AccountReceivableDomainServiceIntf,
+  AccountReceivableDomainService,
+  AccountReceivableRepositoryIntf,
+  AccountReceivableRepository;
 
 constructor TAppBootstrap.Create(const AConfig: IApiConfig);
 begin
@@ -115,6 +125,11 @@ var
   SaleDomainService: ISaleDomainService;
   SaleAppService: ISaleAppService;
   SaleController: ISaleController;
+  AccountReceivableRepository: IAccountReceivableRepository;
+  AccountReceivableValidator: IAccountReceivableValidator;
+  AccountReceivableDomainService: IAccountReceivableDomainService;
+  AccountReceivableAppService: IAccountReceivableAppService;
+  AccountReceivableController: IAccountReceivableController;
 begin
   Writeln(FConfig.ApplicationName);
   Writeln('Version: ' + FConfig.Version);
@@ -173,6 +188,26 @@ begin
     TCashRegisterController.Create(CashRegisterAppService);
   CashRegisterController.RegisterRoutes;
 
+  AccountReceivableRepository :=
+    TAccountReceivableRepository.Create(DatabaseConnection);
+  AccountReceivableValidator :=
+    TAccountReceivableValidator.Create;
+  AccountReceivableDomainService :=
+    TAccountReceivableDomainService.Create;
+  AccountReceivableAppService :=
+    TAccountReceivableAppService.Create(
+      AccountReceivableRepository,
+      AccountReceivableValidator,
+      AccountReceivableDomainService,
+      CashRegisterRepository,
+      CashMovementRepository,
+      CustomerRepository,
+      TransactionManager);
+  AccountReceivableController :=
+    TAccountReceivableController.Create(
+      AccountReceivableAppService);
+  AccountReceivableController.RegisterRoutes;
+
   SaleRepository := TSaleRepository.Create(DatabaseConnection);
   SaleItemRepository := TSaleItemRepository.Create(DatabaseConnection);
   SalePaymentRepository := TSalePaymentRepository.Create(DatabaseConnection);
@@ -188,7 +223,8 @@ begin
     CashMovementRepository,
     SaleValidator,
     SaleDomainService,
-    TransactionManager);
+    TransactionManager,
+    AccountReceivableAppService);
   SaleController := TSaleController.Create(SaleAppService);
   SaleController.RegisterRoutes;
 
@@ -207,6 +243,8 @@ begin
         '/api/cash/current');
       Writeln('Sales endpoint: http://localhost:', FConfig.DefaultPort,
         '/api/sales');
+      Writeln('Accounts receivable endpoint: http://localhost:',
+        FConfig.DefaultPort, '/api/accounts-receivable');
     end);
 end;
 
