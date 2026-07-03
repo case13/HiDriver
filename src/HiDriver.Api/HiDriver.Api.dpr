@@ -9,8 +9,9 @@ uses
   ApiConfigIntf in 'Config\Interfaces\ApiConfigIntf.pas',
   ApiConfig in 'Config\Implementations\ApiConfig.pas',
   AppBootstrapIntf in 'Config\Interfaces\AppBootstrapIntf.pas',
-  Horse,
-  AppBootstrap in 'Config\Implementations\AppBootstrap.pas';
+  AppBootstrap in 'Config\Implementations\AppBootstrap.pas',
+  HealthControllerIntf in 'Controllers\Interfaces\HealthControllerIntf.pas',
+  HealthController in 'Controllers\Implementations\HealthController.pas';
 
 var
   Config: IApiConfig;
@@ -25,5 +26,4 @@ begin
     on E: Exception do
       Writeln(E.ClassName, ': ', E.Message);
   end;
-  Readln;
 end.
