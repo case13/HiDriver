@@ -9,6 +9,7 @@ uses
   Vcl.StdCtrls,
   IApiClient,
   IAuthDesktopService,
+  IProductDesktopService,
   IUserSession;
 
 type
@@ -31,12 +32,14 @@ type
   private
     FApiClient: IApiClientContract;
     FAuthService: IAuthDesktopServiceContract;
+    FProductService: IProductDesktopServiceContract;
     FUserSession: IUserSessionContract;
     procedure ShowMainForm;
   public
     procedure Initialize(
       const AApiClient: IApiClientContract;
       const AAuthService: IAuthDesktopServiceContract;
+      const AProductService: IProductDesktopServiceContract;
       const AUserSession: IUserSessionContract);
   end;
 
@@ -124,10 +127,12 @@ end;
 procedure TLoginForm.Initialize(
   const AApiClient: IApiClientContract;
   const AAuthService: IAuthDesktopServiceContract;
+  const AProductService: IProductDesktopServiceContract;
   const AUserSession: IUserSessionContract);
 begin
   FApiClient := AApiClient;
   FAuthService := AAuthService;
+  FProductService := AProductService;
   FUserSession := AUserSession;
 end;
 
@@ -141,6 +146,7 @@ begin
     DesktopMainForm.Initialize(
       FApiClient,
       FAuthService,
+      FProductService,
       FUserSession);
     DesktopMainForm.ShowModal;
   finally

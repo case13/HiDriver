@@ -56,13 +56,22 @@ object MainForm: TMainForm
     Caption = 'API response (JSON)'
   end
   object btnProtectedRequest: TButton
-    Left = 32
+    Left = 232
     Top = 130
     Width = 188
     Height = 34
     Caption = 'Test protected endpoint'
-    TabOrder = 0
+    TabOrder = 1
     OnClick = btnProtectedRequestClick
+  end
+  object btnProducts: TButton
+    Left = 32
+    Top = 130
+    Width = 188
+    Height = 34
+    Caption = 'Produtos'
+    TabOrder = 0
+    OnClick = btnProductsClick
   end
   object btnLogout: TButton
     Left = 600
@@ -70,7 +79,7 @@ object MainForm: TMainForm
     Width = 112
     Height = 34
     Caption = 'Sign out'
-    TabOrder = 1
+    TabOrder = 2
     OnClick = btnLogoutClick
   end
   object mmResult: TMemo
@@ -86,7 +95,7 @@ object MainForm: TMainForm
     ParentFont = False
     ReadOnly = True
     ScrollBars = ssBoth
-    TabOrder = 2
+    TabOrder = 3
     WordWrap = False
   end
 end

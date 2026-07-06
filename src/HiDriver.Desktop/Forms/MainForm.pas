@@ -9,6 +9,7 @@ uses
   Vcl.StdCtrls,
   IApiClient,
   IAuthDesktopService,
+  IProductDesktopService,
   IUserSession;
 
 type
@@ -17,21 +18,25 @@ type
     lblWelcome: TLabel;
     lblRole: TLabel;
     btnProtectedRequest: TButton;
+    btnProducts: TButton;
     btnLogout: TButton;
     lblResult: TLabel;
     mmResult: TMemo;
     procedure btnLogoutClick(Sender: TObject);
+    procedure btnProductsClick(Sender: TObject);
     procedure btnProtectedRequestClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FApiClient: IApiClientContract;
     FAuthService: IAuthDesktopServiceContract;
+    FProductService: IProductDesktopServiceContract;
     FUserSession: IUserSessionContract;
     procedure UpdateUserInformation;
   public
     procedure Initialize(
       const AApiClient: IApiClientContract;
       const AAuthService: IAuthDesktopServiceContract;
+      const AProductService: IProductDesktopServiceContract;
       const AUserSession: IUserSessionContract);
   end;
 
@@ -41,12 +46,31 @@ implementation
 
 uses
   System.SysUtils,
-  Vcl.Dialogs;
+  Vcl.Dialogs,
+  ProductsListForm;
 
 procedure TMainForm.btnLogoutClick(Sender: TObject);
 begin
   FAuthService.Logout;
   ModalResult := mrCancel;
+end;
+
+procedure TMainForm.btnProductsClick(Sender: TObject);
+var
+  ProductsForm: TProductsListForm;
+begin
+  ProductsForm := TProductsListForm.Create(Application);
+  try
+    ProductsForm.Initialize(FProductService);
+    ProductsForm.ShowModal;
+    if ProductsForm.SessionExpired then
+    begin
+      FAuthService.Logout;
+      ModalResult := mrCancel;
+    end;
+  finally
+    ProductsForm.Free;
+  end;
 end;
 
 procedure TMainForm.btnProtectedRequestClick(Sender: TObject);
@@ -90,10 +114,12 @@ end;
 procedure TMainForm.Initialize(
   const AApiClient: IApiClientContract;
   const AAuthService: IAuthDesktopServiceContract;
+  const AProductService: IProductDesktopServiceContract;
   const AUserSession: IUserSessionContract);
 begin
   FApiClient := AApiClient;
   FAuthService := AAuthService;
+  FProductService := AProductService;
   FUserSession := AUserSession;
   UpdateUserInformation;
 end;

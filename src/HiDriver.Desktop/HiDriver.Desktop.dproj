@@ -40,7 +40,7 @@
         <SanitizedProjectName>HiDriver_Desktop</SanitizedProjectName>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
-        <DCC_UnitSearchPath>Forms;ApiClient\Interfaces;ApiClient\Implementations;Config\Interfaces;Config\Implementations;Session\Interfaces;Session\Implementations;Services\Interfaces;Services\Implementations;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>Forms;ApiClient\Interfaces;ApiClient\Implementations;Config\Interfaces;Config\Implementations;Session\Interfaces;Session\Implementations;Services\Interfaces;Services\Implementations;DTOs\Products;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
@@ -78,6 +78,9 @@
         <DCCReference Include="Forms\MainForm.pas">
             <Form>MainForm</Form>
         </DCCReference>
+        <DCCReference Include="Forms\ProductsListForm.pas">
+            <Form>ProductsListForm</Form>
+        </DCCReference>
         <DCCReference Include="Config\Interfaces\IDesktopConfig.pas"/>
         <DCCReference Include="Config\Implementations\DesktopConfig.pas"/>
         <DCCReference Include="Session\Interfaces\IUserSession.pas"/>
@@ -86,6 +89,9 @@
         <DCCReference Include="ApiClient\Implementations\ApiClient.pas"/>
         <DCCReference Include="Services\Interfaces\IAuthDesktopService.pas"/>
         <DCCReference Include="Services\Implementations\AuthDesktopService.pas"/>
+        <DCCReference Include="DTOs\Products\ProductDto.pas"/>
+        <DCCReference Include="Services\Interfaces\IProductDesktopService.pas"/>
+        <DCCReference Include="Services\Implementations\ProductDesktopService.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
