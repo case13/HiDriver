@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   LoginForm in 'Forms\LoginForm.pas' {LoginForm},
   MainForm in 'Forms\MainForm.pas' {MainForm},
-  ProductsListForm in 'Forms\ProductsListForm.pas' {ProductsListForm},
+  vwProductConsult in 'Forms\Products\vwProductConsult.pas' {fvwProductConsult},
+  vwProductSave in 'Forms\Products\vwProductSave.pas' {fvwProductSave},
   IDesktopConfig in 'Config\Interfaces\IDesktopConfig.pas',
   DesktopConfig in 'Config\Implementations\DesktopConfig.pas',
   IUserSession in 'Session\Interfaces\IUserSession.pas',
@@ -14,6 +15,7 @@ uses
   IAuthDesktopService in 'Services\Interfaces\IAuthDesktopService.pas',
   AuthDesktopService in 'Services\Implementations\AuthDesktopService.pas',
   ProductDto in 'DTOs\Products\ProductDto.pas',
+  ProductSaveRequestDto in 'DTOs\Products\ProductSaveRequestDto.pas',
   IProductDesktopService in 'Services\Interfaces\IProductDesktopService.pas',
   ProductDesktopService in 'Services\Implementations\ProductDesktopService.pas';
 

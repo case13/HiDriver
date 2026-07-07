@@ -47,7 +47,7 @@ implementation
 uses
   System.SysUtils,
   Vcl.Dialogs,
-  ProductsListForm;
+  vwProductConsult;
 
 procedure TMainForm.btnLogoutClick(Sender: TObject);
 begin
@@ -57,9 +57,9 @@ end;
 
 procedure TMainForm.btnProductsClick(Sender: TObject);
 var
-  ProductsForm: TProductsListForm;
+  ProductsForm: TfvwProductConsult;
 begin
-  ProductsForm := TProductsListForm.Create(Application);
+  ProductsForm := TfvwProductConsult.Create(Application);
   try
     ProductsForm.Initialize(FProductService);
     ProductsForm.ShowModal;
