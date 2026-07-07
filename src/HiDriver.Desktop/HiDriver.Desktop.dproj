@@ -85,7 +85,7 @@
         <SanitizedProjectName>HiDriver_Desktop</SanitizedProjectName>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
-        <DCC_UnitSearchPath>Forms;Forms\Products;ApiClient\Interfaces;ApiClient\Implementations;Config\Interfaces;Config\Implementations;Session\Interfaces;Session\Implementations;Services\Interfaces;Services\Implementations;DTOs\Products;Utils;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>Forms;Forms\Products;Forms\Customers;ApiClient\Interfaces;ApiClient\Implementations;Config\Interfaces;Config\Implementations;Session\Interfaces;Session\Implementations;Services\Interfaces;Services\Implementations;DTOs\Products;DTOs\Customers;Utils;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
@@ -150,6 +150,12 @@
         <DCCReference Include="Forms\MainForm.pas">
             <Form>MainForm</Form>
         </DCCReference>
+        <DCCReference Include="Forms\Customers\vwCustomerConsult.pas">
+            <Form>fvwCustomerConsult</Form>
+        </DCCReference>
+        <DCCReference Include="Forms\Customers\vwCustomerSave.pas">
+            <Form>fvwCustomerSave</Form>
+        </DCCReference>
         <DCCReference Include="Forms\Products\vwProductConsult.pas">
             <Form>fvwProductConsult</Form>
         </DCCReference>
@@ -164,9 +170,12 @@
         <DCCReference Include="ApiClient\Implementations\ApiClient.pas"/>
         <DCCReference Include="Services\Interfaces\IAuthDesktopService.pas"/>
         <DCCReference Include="Services\Implementations\AuthDesktopService.pas"/>
+        <DCCReference Include="DTOs\Customers\CustomerDto.pas"/>
+        <DCCReference Include="DTOs\Customers\CustomerSaveRequestDto.pas"/>
+        <DCCReference Include="Services\Interfaces\ICustomerDesktopService.pas"/>
+        <DCCReference Include="Services\Implementations\CustomerDesktopService.pas"/>
         <DCCReference Include="DTOs\Products\ProductDto.pas"/>
         <DCCReference Include="DTOs\Products\ProductSaveRequestDto.pas"/>
-        <DCCReference Include="Utils\GridFilterHelper.pas"/>
         <DCCReference Include="Services\Interfaces\IProductDesktopService.pas"/>
         <DCCReference Include="Services\Implementations\ProductDesktopService.pas"/>
         <BuildConfiguration Include="Release">

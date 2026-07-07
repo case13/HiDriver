@@ -9,6 +9,7 @@ uses
   Vcl.StdCtrls,
   IApiClient,
   IAuthDesktopService,
+  ICustomerDesktopService,
   IProductDesktopService,
   IUserSession;
 
@@ -19,9 +20,11 @@ type
     lblRole: TLabel;
     btnProtectedRequest: TButton;
     btnProducts: TButton;
+    btnCustomers: TButton;
     btnLogout: TButton;
     lblResult: TLabel;
     mmResult: TMemo;
+    procedure btnCustomersClick(Sender: TObject);
     procedure btnLogoutClick(Sender: TObject);
     procedure btnProductsClick(Sender: TObject);
     procedure btnProtectedRequestClick(Sender: TObject);
@@ -29,6 +32,7 @@ type
   private
     FApiClient: IApiClientContract;
     FAuthService: IAuthDesktopServiceContract;
+    FCustomerService: ICustomerDesktopServiceContract;
     FProductService: IProductDesktopServiceContract;
     FUserSession: IUserSessionContract;
     procedure UpdateUserInformation;
@@ -36,6 +40,7 @@ type
     procedure Initialize(
       const AApiClient: IApiClientContract;
       const AAuthService: IAuthDesktopServiceContract;
+      const ACustomerService: ICustomerDesktopServiceContract;
       const AProductService: IProductDesktopServiceContract;
       const AUserSession: IUserSessionContract);
   end;
@@ -47,7 +52,26 @@ implementation
 uses
   System.SysUtils,
   Vcl.Dialogs,
+  vwCustomerConsult,
   vwProductConsult;
+
+procedure TMainForm.btnCustomersClick(Sender: TObject);
+var
+  CustomersForm: TfvwCustomerConsult;
+begin
+  CustomersForm := TfvwCustomerConsult.Create(Application);
+  try
+    CustomersForm.Initialize(FCustomerService);
+    CustomersForm.ShowModal;
+    if CustomersForm.SessionExpired then
+    begin
+      FAuthService.Logout;
+      ModalResult := mrCancel;
+    end;
+  finally
+    CustomersForm.Free;
+  end;
+end;
 
 procedure TMainForm.btnLogoutClick(Sender: TObject);
 begin
@@ -114,11 +138,13 @@ end;
 procedure TMainForm.Initialize(
   const AApiClient: IApiClientContract;
   const AAuthService: IAuthDesktopServiceContract;
+  const ACustomerService: ICustomerDesktopServiceContract;
   const AProductService: IProductDesktopServiceContract;
   const AUserSession: IUserSessionContract);
 begin
   FApiClient := AApiClient;
   FAuthService := AAuthService;
+  FCustomerService := ACustomerService;
   FProductService := AProductService;
   FUserSession := AUserSession;
   UpdateUserInformation;
